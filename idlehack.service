@@ -1,0 +1,13 @@
+[Unit]
+Description=Idle Hack. It will run /bin/swayidle-inhibit when firefox requests idle inhibit
+After=syslog.target
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/idlehack
+Restart=on-failure
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=default.target

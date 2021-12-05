@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Swayidle respects systemd-inhibit messages, so use that to send the signal
+
+# block system idle for a minute
+systemd-inhibit --what=idle --who=swayidle-inhibit --why=commanded --mode=block sleep 60 &

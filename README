@@ -1,0 +1,45 @@
+Idlehack for Sway
+-----------------
+
+Listen for Firefox/Chromium dbus messages that request screensaver inhibit,
+typically because the user is watching video.  Sway doesn't currently listen
+for such messages, so here we create a daemon that listens for these messages
+and then invokes "/bin/swayidle-inhibit" which is responsible for temporarily
+disabling the screen blanking.
+
+The XScreenSaver code which handled this was scavanaged off of the net and
+hacked, most of the credit should go to them.
+
+Idlehack needs to be running in the background in order to create the dbus
+listener before Firefox is launched.  Firefox only checks for the Dbus
+end-points when first starting.  If it sees the dbus listener, it will
+send the inhibit messages every time video is playing.
+
+Idlehack will call /bin/swayidle-inhibit everytime such a message is
+received from Firefox.
+
+You need a "/bin/swayidle-inhibit"  that will do whatever is necessary
+to inhibit the screensaver on your system for say 60 seconds.  Idlehack
+will keep calling this command while the video is playing.   It's done
+this way so that your screensaver isn't permanently inhibited if Firefox
+crashes while holding the lock.
+
+
+For a Systemd based system
+--------------------------
+
+Compile "idlehack" and move the executable to "/usr/libexec/"
+
+Copy the "idlehack.service" file "/etc/systemd/user/"
+
+Copy "swayidle-inhibit" to "/bin/"
+
+Run:
+   # systemctl --user enable idlehack
+   # systemctl --user start idlehack
+
+Then restart Firefox
+
+
+You can do "systemctl --user status idlehack" after starting a video to see that
+the inhibit has been called.
