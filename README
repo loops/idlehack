@@ -7,7 +7,7 @@ for such messages, so here we create a daemon that listens for these messages
 and then invokes "/bin/swayidle-inhibit" which is responsible for temporarily
 disabling the screen blanking.
 
-The XScreenSaver code which handled this was scavanaged off of the net and
+The XScreenSaver code which handled this was scavenged off of the net and
 hacked, most of the credit should go to them.
 
 Idlehack needs to be running in the background in order to create the dbus
@@ -30,7 +30,7 @@ For a Systemd based system
 
 Compile "idlehack" and move the executable to "/usr/libexec/"
 
-Copy the "idlehack.service" file "/etc/systemd/user/"
+Copy the "idlehack.service" file to "/etc/systemd/user/"
 
 Copy "swayidle-inhibit" to "/bin/"
 
