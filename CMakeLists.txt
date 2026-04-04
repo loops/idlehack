@@ -39,8 +39,15 @@ target_link_libraries(${IDLEHACK_TARGET} PRIVATE PkgConfig::DBUS)
 target_link_libraries(${IDLEHACK_TARGET} PRIVATE PkgConfig::X11)
 
 install(TARGETS ${IDLEHACK_TARGET} DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}")
-install(FILES ${CMAKE_SOURCE_DIR}/idlehack.service DESTINATION "/etc/systemd/user/")
-install(FILES ${CMAKE_SOURCE_DIR}/swayidle-inhibit DESTINATION "${CMAKE_INSTALL_BINDIR}")
+
+# Install systemd service
+set(IDLEHACK_PATH "${CMAKE_INSTALL_FULL_LIBEXECDIR}/${IDLEHACK_TARGET}")
+configure_file(${CMAKE_SOURCE_DIR}/idlehack.service.in ${CMAKE_BINARY_DIR}/idlehack.service @ONLY)
+
+install(FILES ${CMAKE_BINARY_DIR}/idlehack.service DESTINATION "/etc/systemd/user/")
+install(FILES ${CMAKE_SOURCE_DIR}/swayidle-inhibit
+DESTINATION "${CMAKE_INSTALL_BINDIR}"
+PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 target_compile_definitions(${IDLEHACK_TARGET} PRIVATE HAVE_LIBSYSTEMD)
 target_compile_definitions(${IDLEHACK_TARGET} PRIVATE HAVE_UNISTD_H)
