@@ -26,9 +26,9 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
 	set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -g -fsigned-char")
-set(CMAKE_CXX_FLAGS_DEBUG "-O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+set(CMAKE_C_FLAGS "-Wall -Wextra -g -fsigned-char")
+set(CMAKE_C_FLAGS_DEBUG "-O0")
+set(CMAKE_C_FLAGS_RELEASE "-O2")
 
 add_executable(${IDLEHACK_TARGET} ${SOURCE_FILES})
 
