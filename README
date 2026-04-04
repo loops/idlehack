@@ -28,7 +28,7 @@ crashes while holding the lock.
 For a Systemd based system
 --------------------------
 
-Compile:
+Install:
     cmake -B build
     cmake --build build
     sudo cmake --install build
