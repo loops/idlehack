@@ -514,6 +514,18 @@ xscreensaver_method_inhibit (sd_bus_message *m, void *arg,
   s = strrchr (application_name, '/');
   if (s && s[1]) application_name = s+1;
 
+  if (strcasestr (inhibit_reason, "audio") &&
+      !strcasestr (inhibit_reason, "video")) {
+    /* Firefox 78 sends an inhibit when playing audio only, with reason
+       "audio-playing".  This is horrible.  Ignore it.  (But perhaps it
+       would be better to accept it, issue them a cookie, and then just
+       ignore that entry?) */
+    if (verbose_p)
+      fprintf (stderr, "%s: inhibited by \"%s\" (%s) with \"%s\", ignored\n",
+               blurb(), application_name, sender, inhibit_reason);
+    return -1;
+  }
+  
   /* Tell the global tracker object to monitor when this peer exits. */
   rc = sd_bus_track_add_name(ctx->track, sender);
   if (rc < 0) {
