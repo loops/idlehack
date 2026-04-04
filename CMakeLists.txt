@@ -19,6 +19,7 @@ include(GNUInstallDirs)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(DBUS REQUIRED IMPORTED_TARGET dbus-1)
 pkg_check_modules(SYSTEMD REQUIRED IMPORTED_TARGET libsystemd)
+pkg_check_modules(X11 REQUIRED IMPORTED_TARGET x11)
 
 # ensure that you get release mode by default
 if("${CMAKE_BUILD_TYPE}" STREQUAL "")
@@ -35,6 +36,7 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 target_link_libraries(${IDLEHACK_TARGET} PRIVATE PkgConfig::SYSTEMD)
 target_link_libraries(${IDLEHACK_TARGET} PRIVATE PkgConfig::DBUS)
+target_link_libraries(${IDLEHACK_TARGET} PRIVATE PkgConfig::X11)
 
 install(TARGETS ${IDLEHACK_TARGET} DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}")
 install(FILES ${CMAKE_SOURCE_DIR}/idlehack.service DESTINATION "/etc/systemd/user/")
@@ -43,7 +45,6 @@ install(FILES ${CMAKE_SOURCE_DIR}/swayidle-inhibit DESTINATION "${CMAKE_INSTALL_
 target_compile_definitions(${IDLEHACK_TARGET} PRIVATE HAVE_LIBSYSTEMD)
 target_compile_definitions(${IDLEHACK_TARGET} PRIVATE HAVE_UNISTD_H)
 target_compile_definitions(${IDLEHACK_TARGET} PRIVATE GETTIMEOFDAY_TWO_ARGS)
-# target_compile_definitions(${IDLEHACK_TARGET} PRIVATE HAVE_CONFIG_H)
 
 # message("BINDIR: ${CMAKE_INSTALL_FULL_BINDIR}")
 # message("SBINDIR: ${CMAKE_INSTALL_FULL_SBINDIR}")
