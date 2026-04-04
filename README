@@ -28,11 +28,10 @@ crashes while holding the lock.
 For a Systemd based system
 --------------------------
 
-Compile "idlehack" and move the executable to "/usr/libexec/"
-
-Copy the "idlehack.service" file to "/etc/systemd/user/"
-
-Copy "swayidle-inhibit" to "/bin/"
+Compile:
+    cmake -B build
+    cmake --build build
+    sudo cmake --install build
 
 Run:
    # systemctl --user enable idlehack
