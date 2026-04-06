@@ -1,0 +1,70 @@
+cmake_minimum_required(VERSION 3.20)
+set(IDLEHACK_TARGET idlehack)
+
+project("idlehack"
+	DESCRIPTION "hack to enable dbus idle inhibit on swayidle"
+	LANGUAGES C
+)
+
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
+	${PROJECT_SOURCE_DIR}/src/*.c
+	${PROJECT_SOURCE_DIR}/src/*.h
+)
+
+set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+include(GNUInstallDirs)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(DBUS REQUIRED IMPORTED_TARGET dbus-1)
+pkg_check_modules(SYSTEMD REQUIRED IMPORTED_TARGET libsystemd)
+pkg_check_modules(X11 REQUIRED IMPORTED_TARGET x11)
+
+# ensure that you get release mode by default
+if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+	set(CMAKE_BUILD_TYPE "Release")
+endif()
+
+set(CMAKE_C_FLAGS "-Wall -Wextra -g -fsigned-char")
+set(CMAKE_C_FLAGS_DEBUG "-O0")
+set(CMAKE_C_FLAGS_RELEASE "-O2")
+
+add_executable(${IDLEHACK_TARGET} ${SOURCE_FILES})
+
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
+target_link_libraries(${IDLEHACK_TARGET} PRIVATE PkgConfig::SYSTEMD)
+target_link_libraries(${IDLEHACK_TARGET} PRIVATE PkgConfig::DBUS)
+target_link_libraries(${IDLEHACK_TARGET} PRIVATE PkgConfig::X11)
+
+install(TARGETS ${IDLEHACK_TARGET} DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}")
+
+# Install systemd service
+set(IDLEHACK_PATH "${CMAKE_INSTALL_FULL_LIBEXECDIR}/${IDLEHACK_TARGET}")
+configure_file(${CMAKE_SOURCE_DIR}/idlehack.service.in ${CMAKE_BINARY_DIR}/idlehack.service @ONLY)
+
+install(FILES ${CMAKE_BINARY_DIR}/idlehack.service DESTINATION "/etc/systemd/user/")
+install(FILES ${CMAKE_SOURCE_DIR}/swayidle-inhibit
+DESTINATION "${CMAKE_INSTALL_BINDIR}"
+PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+target_compile_definitions(${IDLEHACK_TARGET} PRIVATE HAVE_LIBSYSTEMD)
+target_compile_definitions(${IDLEHACK_TARGET} PRIVATE HAVE_UNISTD_H)
+target_compile_definitions(${IDLEHACK_TARGET} PRIVATE GETTIMEOFDAY_TWO_ARGS)
+
+# message("BINDIR: ${CMAKE_INSTALL_FULL_BINDIR}")
+# message("SBINDIR: ${CMAKE_INSTALL_FULL_SBINDIR}")
+# message("LIBEXECDIR: ${CMAKE_INSTALL_FULL_LIBEXECDIR}")
+# message("SYSCONFDIR: ${CMAKE_INSTALL_FULL_SYSCONFDIR}")
+# message("SHAREDSTATEDIR: ${CMAKE_INSTALL_FULL_SHAREDSTATEDIR}")
+# message("LOCALSTATEDIR: ${CMAKE_INSTALL_FULL_LOCALSTATEDIR}")
+# message("RUNSTATEDIR: ${CMAKE_INSTALL_FULL_RUNSTATEDIR}")
+# message("LIBDIR: ${CMAKE_INSTALL_FULL_LIBDIR}")
+# message("INCLUDEDIR: ${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+# message("OLDINCLUDEDIR: ${CMAKE_INSTALL_FULL_OLDINCLUDEDIR}")
+# message("DATADIR: ${CMAKE_INSTALL_FULL_DATADIR}")
+# message("INFODIR: ${CMAKE_INSTALL_FULL_INFODIR}")
+# message("LOCALDIR: ${CMAKE_INSTALL_FULL_LOCALDIR}")
+# message("MANDIR: ${CMAKE_INSTALL_FULL_MANDIR}")
+# message("DOCDIR: ${CMAKE_INSTALL_FULL_DOCDIR}")

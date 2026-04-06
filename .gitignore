@@ -1,2 +1,4 @@
 idlehack
+.cache
+build
 *.o
